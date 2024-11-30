@@ -1,15 +1,35 @@
-import { StyleSheet, Text, TextInput, View,Pressable } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, TextInput, View,Pressable,Alert } from 'react-native'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from 'expo-router';
+import {saveToken} from "./tokenStorage"
+import apiClient from "../../api/apiClient";
+import { AxiosError } from 'axios';
 
-const Login = () => {
+const Login:React.FC = () => {
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+  const handleLogin=async()=>{
+    try {
+      const response= await apiClient.post("/login",{email,password});
+      Alert.alert(response.data.message);
+      await saveToken(response.data.acesstoken);
+      router.replace("/(tabs)");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log(error.response?.data.message);
+        Alert.alert(error.response?.data.message)
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
+  }
   return (
     <SafeAreaView  style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}>
       <View style={{ marginTop: 150 }}>
-        <Text style={{ fontSize: 18, fontWeight: "600", color: "#0066b2" }}>TODO LIST TRACKER</Text>
+        <Text style={{ fontSize: 18, fontWeight: "600", color: "#6200EE" }}>TODO LIST TRACKER</Text>
       </View>
       <View>
         <Text style={{fontSize:18,fontWeight:"600",marginTop:20}}>Login to your account</Text>
@@ -32,6 +52,7 @@ const Login = () => {
             />
           <TextInput
            placeholder='enter your email'
+           onChangeText={(text:string) => setEmail(text)} 
            style={{color:"gray",
             fontSize:17,
             marginVertical: 10,
@@ -57,6 +78,7 @@ const Login = () => {
               color="gray"
             />
           <TextInput
+          onChangeText={(text)=>setPassword(text)}
            placeholder='enter your password'
            style={{color:"gray",
             fontSize:17,
@@ -66,18 +88,22 @@ const Login = () => {
            
           />
         </View>
-        <Pressable style={{
+        <Pressable
+          onPress={handleLogin}
+         style={{
           marginTop:20,
           width:200,
-          backgroundColor: "#6699CC",
+          backgroundColor: "#6200EE",
           padding:15,
           borderRadius:5,
           marginHorizontal:'auto'
-        }}>
+        }
+        }>
           <Text style={{
             fontSize:16,
             fontWeight:600,
-            textAlign:"center"
+            textAlign:"center",
+            color:"white"
           }}>Login</Text>
         </Pressable>
         <Pressable

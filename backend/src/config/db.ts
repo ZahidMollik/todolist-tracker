@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import {env} from './envVariable'
+import {Env} from './envVariable'
 
-const MONGODB_URL =env.MONGODB_URL || '';
+const MONGODB_URL =Env.MONGODB_URL || '';
 
 export const connectDB = async () => {
     try {
