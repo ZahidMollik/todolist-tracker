@@ -5,7 +5,8 @@ import { StatusCodes } from "http-status-codes";
 
 export const createTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { title, description, priority, dueDate, image } = req.body;
+    const { title, description, priority, dueDate} = req.body;
+    const image=req.file?req.file.filename:null;
 
     const newTask = new Task({
       title,
