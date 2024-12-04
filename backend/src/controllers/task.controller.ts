@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
+import { AuthenticatedRequest } from "../types/types";
 import Task from "../models/task.model";
 import { StatusCodes } from "http-status-codes";
 
-export const createTask = async (req: Request, res: Response): Promise<void> => {
+export const createTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { title, description, priority, dueDate, image,userId } = req.body;
+    const { title, description, priority, dueDate, image } = req.body;
 
     const newTask = new Task({
       title,
@@ -12,7 +13,7 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
       priority,
       image,
       dueDate,
-      userId
+      userId:req.user?.id
     });
 
     const savedTask = await newTask.save();
