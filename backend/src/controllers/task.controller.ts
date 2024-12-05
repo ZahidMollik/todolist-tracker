@@ -30,3 +30,91 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
   }
 };
 
+export const getAllTasks = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const tasks = await Task.find();
+    res.status(StatusCodes.OK).json({
+      status:true,
+      message: "Tasks retrieved successfully", 
+      data: tasks });
+  } catch (error: any) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status:false, 
+      message: "Error retrieving tasks", 
+      error: error.message });
+  }
+};
+
+export const getTaskById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const taskId = req.params.id;
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        status:false, 
+        message: "Task not found" });
+      return;
+    }
+
+    res.status(StatusCodes.OK).json({ 
+      status:true,
+      message: "Task retrieved successfully", 
+      data: task });
+  } catch (error: any) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status:false, 
+      message: "Error retrieving task", 
+      error: error.message });
+  }
+};
+
+export const updateTask = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const taskId = req.params.id;
+    const updates = req.body;
+
+    const updatedTask = await Task.findByIdAndUpdate(taskId, updates, { new: true });
+
+    if (!updatedTask) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        status:true,
+        message: "Task not found" });
+      return;
+    }
+
+    res.status(StatusCodes.OK).json({
+      status:true,
+      message: "Task updated successfully", data: updatedTask });
+  } catch (error: any) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status:false,
+      message: "Error updating task", error: error.message });
+  }
+};
+
+export const deleteTask = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const taskId = req.params.id;
+
+    const deletedTask = await Task.findByIdAndDelete(taskId);
+
+    if (!deletedTask) {
+      res.status(StatusCodes.NOT_FOUND).json({
+      status:false, 
+      message: "Task not found" });
+      return;
+    }
+
+    res.status(StatusCodes.OK).json({ 
+      status:true, 
+      message: "Task deleted successfully", 
+      data: deletedTask });
+  } catch (error: any) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status:false, 
+      message: "Error deleting task", 
+      error: error.message });
+  }
+};
+
