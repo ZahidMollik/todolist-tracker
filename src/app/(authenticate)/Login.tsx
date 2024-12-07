@@ -11,12 +11,13 @@ import { AxiosError } from 'axios';
 const Login:React.FC = () => {
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
+  
   const handleLogin=async()=>{
     try {
       const response= await apiClient.post("/login",{email,password});
       Alert.alert(response.data.message);
       await saveToken(response.data.acesstoken);
-      router.replace("/(tabs)");
+      router.replace("/screens");
     } catch (error) {
       if (error instanceof AxiosError) {
         // console.log(error.response?.data.message);
@@ -110,7 +111,7 @@ const Login:React.FC = () => {
             onPress={() => router.replace("/Register")}
             style={{ marginTop: 15 }}
           >
-            <Text style={{ textAlign: "center", fontSize: 15, color: "gray" }}>
+            <Text style={{ textAlign: "center", fontSize: 15, color: "#1c8eff" }}>
               Don't have an account? Sign up
             </Text>
           </Pressable>

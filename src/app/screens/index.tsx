@@ -48,9 +48,6 @@ const handleSave=()=>{
     const taskId = tasks[index]._id;
     try {
       await apiClient.delete(`/task/delete/${taskId}`);
-      // const updatedTasks = tasks.filter((_, i) => i !== index);
-      // setTasks(updatedTasks);
-      // setRefreshKey((prev)=>prev+1);
       handleSave();
     } catch (error:any) {
       Alert.alert('Error', 'Failed to delete the task.:',error);
@@ -93,7 +90,7 @@ const handleSave=()=>{
       />
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
-        <Feather name="plus-circle" size={50} color="#6200EE" />
+        <Feather name="plus-circle" size={40} color="#6200EE" />
       </Pressable>
 
       <TaskModal
@@ -124,7 +121,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: 'absolute',
-    bottom: 20,
+    top: 10,
     right: 20,
   },
 });

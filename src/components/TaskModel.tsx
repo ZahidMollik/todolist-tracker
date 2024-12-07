@@ -34,7 +34,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ visible, onClose, onSave, initial
   const [priority, setPriority] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [dueDate, setDueDate] = useState<Date | null>(null);
-  const [status, setStatus] = useState<string>("");
+  const [status, setStatus] = useState<string>("pending");
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
@@ -66,6 +66,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ visible, onClose, onSave, initial
       Alert.alert("Success", "Task has been saved!");
       onClose();
       onSave();
+      resetFields();
     } catch (error:any) {
       Alert.alert("Error:",error.message);
     }
