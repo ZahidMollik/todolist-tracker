@@ -7,6 +7,8 @@ type TaskListProps = {
     title: string;
     description: string;
     priority: string;
+    dueDate:Date|null;
+    status:string;
     image: string | null;
   }[];
   onDelete: (index: number) => void;
@@ -24,8 +26,9 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onDelete, onUpdate, onViewDe
           onPress={() => onViewDetails(task)}  // Handle task click
         >
           <Text style={styles.taskTitle}>{task.title}</Text>
-          {task.image && <Image source={{ uri: task.image }} style={styles.imagePreview} />}
+          {/* {task.image && <Image source={{ uri: task.image }} style={styles.imagePreview} />} */}
           <Text>{task.priority}</Text>
+          <Text>{task.status}</Text>
           <Pressable onPress={() => onDelete(index)} style={styles.deleteButton}>
             <Feather name="trash-2" size={20} color="red" />
           </Pressable>

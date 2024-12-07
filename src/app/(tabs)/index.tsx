@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Pressable, StyleSheet, Alert } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import CategoryList from '../../components/CategoryList';
 import TaskModal from '../../components/TaskModel';
 import TaskList from '../../components/TaskList';
 import TaskDetailModal from '../../components/TaskDetailModal';
+import apiClient from '@/src/api/apiClient';
 
 type Task = {
   title: string;
   description: string;
   priority: string;
+  dueDate:Date | null;
+  status:string;
   image: string | null;
+  _id:string | undefined;
 };
 
 const Index = () => {
@@ -20,25 +24,37 @@ const Index = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
-
+  const [refreshKey,setRefreshKey]=useState<number>(0);
   const categories = ['All', 'Important'];
 
-  const handleSaveTask = (task: Task) => {
-    if (selectedTaskIndex !== null) {
-      const updatedTasks = [...tasks];
-      updatedTasks[selectedTaskIndex] = task;
-      setTasks(updatedTasks);
-    } else {
-      setTasks([...tasks, task]);
+  useEffect(() => {
+     const fetchTasks = async () => {
+      try {
+        const response = await apiClient.get('/task');
+        setTasks(response.data.data);
+      } catch (error) {
+        Alert.alert('Error', 'Failed to get tasks.');
+      }
+    };
+
+    fetchTasks();
+  }, [refreshKey]);
+
+const handleSave=()=>{
+  setRefreshKey((prev)=>prev+1);
+}
+
+  const handleDeleteTask = async (index: number) => {
+    const taskId = tasks[index]._id;
+    try {
+      await apiClient.delete(`/task/delete/${taskId}`);
+      // const updatedTasks = tasks.filter((_, i) => i !== index);
+      // setTasks(updatedTasks);
+      // setRefreshKey((prev)=>prev+1);
+      handleSave();
+    } catch (error:any) {
+      Alert.alert('Error', 'Failed to delete the task.:',error);
     }
-
-    setModalVisible(false);
-    setSelectedTaskIndex(null);
-  };
-
-  const handleDeleteTask = (index: number) => {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
-    setTasks(updatedTasks);
   };
 
   const handleUpdateTask = (index: number) => {
@@ -59,7 +75,7 @@ const Index = () => {
   const filteredTasks =
     selectedCategory === 'All'
       ? tasks
-      : tasks.filter((task) => task.priority === 'High');
+      : tasks.filter((task) => task.priority === 'important');
 
   return (
     <View style={styles.container}>
@@ -73,7 +89,7 @@ const Index = () => {
         tasks={filteredTasks}
         onDelete={handleDeleteTask}
         onUpdate={handleUpdateTask}
-        onViewDetails={handleViewDetails}  // Pass onViewDetails handler
+        onViewDetails={handleViewDetails}
       />
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
@@ -86,8 +102,8 @@ const Index = () => {
           setModalVisible(false);
           setSelectedTaskIndex(null);
         }}
-        onSave={handleSaveTask}
-        initialData={selectedTaskIndex !== null ? tasks[selectedTaskIndex] : undefined}
+        onSave={handleSave}
+        initialData={selectedTaskIndex !== null ? tasks[selectedTaskIndex]: undefined}
       />
 
       <TaskDetailModal

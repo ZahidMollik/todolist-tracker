@@ -3,22 +3,33 @@ import { Modal, View, Text, StyleSheet, Pressable, Image } from 'react-native';
 
 type TaskDetailModalProps = {
   visible: boolean;
-  task: any;
+  task: {
+    title: string;
+    description: string;
+    priority: string;
+    dueDate:Date | null;
+    status:string;
+    image: string | null;
+  }|null;
   onClose: () => void;
 };
 
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ visible, task, onClose }) => {
   if (!task) return null;
-
+  const SERVER_URL = "http://10.0.2.2:8000/uploads/";
+  const imageUrl = `${SERVER_URL}${task.image}`; 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.title}>{task.title}</Text>
-          {task.image && <Image source={{ uri: task.image }} style={styles.imagePreview} />}
-          <Text style={styles.priority}>{task.priority}</Text>
           <Text style={styles.description}>{task.description}</Text>
-          
+          <Text style={styles.priority}>{task.priority}</Text>
+          <Text style={styles.priority}>{task.status}</Text>
+          <Text style={styles.priority}>
+            {task.dueDate ? `Due Date: ${task.dueDate}` : 'No Due Date'}
+          </Text>
+          {task.image && <Image source={{ uri: imageUrl }} style={styles.imagePreview} />} 
           <Pressable style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>Close</Text>
           </Pressable>

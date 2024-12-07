@@ -19,7 +19,7 @@ const Login:React.FC = () => {
       router.replace("/(tabs)");
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log(error.response?.data.message);
+        // console.log(error.response?.data.message);
         Alert.alert(error.response?.data.message)
       } else {
         console.error("An unexpected error occurred:", error);
