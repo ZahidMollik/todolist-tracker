@@ -4,7 +4,7 @@ import {connectDB} from "./config/db";
 import cors from "cors";
 import apiRoutes from "./routes";
 import path from "path";
-
+import updateExpiredTasks from "./crons/taskExpiration";
 const app=express();
 
 app.use(express.json());
@@ -17,3 +17,5 @@ app.use('/api',apiRoutes);
 app.listen(PORT,()=>{
   console.log(`Server Running on ${PORT}`);
 })
+
+updateExpiredTasks();
