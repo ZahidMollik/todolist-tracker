@@ -61,8 +61,26 @@ const TaskModal: React.FC<TaskModalProps> = ({ visible, onClose, onSave, initial
     }
 
     try {
-      const task = { title, description, priority, dueDate, image };
-      await apiClient.post("/task/create", task);
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("priority", priority);
+      formData.append("dueDate", dueDate.toISOString());
+      if (image) {
+        const localUri = image;
+        const filename = localUri.split("/").pop();
+        const match = /\.(\w+)$/.exec(filename || "");
+        const fileType = match ? `image/${match[1]}` : "image";
+
+        formData.append("image", {
+          uri: localUri,
+          name: filename,
+          type: fileType,
+        } as any);
+      }
+  
+      await apiClient.post("/task/create", formData,{
+        headers: { "Content-Type": "multipart/form-data" },});
       Alert.alert("Success", "Task has been saved!");
       onClose();
       onSave();

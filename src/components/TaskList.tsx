@@ -34,7 +34,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onDelete, onUpdate, onViewDe
         >
           <Text style={styles.taskTitle}>{task.title}</Text>
           <Text style={task.priority=="important"?{color:"#ef1d16",marginVertical:10,fontWeight:"bold"}:{color:"#1683ef",marginVertical:10,fontWeight:"bold"}}>{task.priority}</Text>
-          <Text style={[{color:"white",width:80,height:25,textAlign:'center',borderRadius:5,fontSize:14,fontWeight:"500"},task.status=="complete"?{backgroundColor:"green",}:task.status=="expired"?{backgroundColor:"red",}:{backgroundColor:"#ccc",color:"black"}]}>
+          <Text style={[{color:"white",width:80,height:25,textAlign:'center',borderRadius:5,fontSize:14,fontWeight:"500"},task.status==="complete"?{backgroundColor:"green"}:task.status==="expired"?{backgroundColor:"red"}:{backgroundColor:"#ccc",color:"black"}]}>
             {task.status}
             </Text>
           <Pressable

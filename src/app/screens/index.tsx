@@ -36,9 +36,8 @@ const Index = () => {
         Alert.alert('Error', 'Failed to get tasks.');
       }
     };
-
-    fetchTasks();
-  }, [refreshKey]);
+   fetchTasks();
+}, [refreshKey]);
 
 const handleSave=()=>{
   setRefreshKey((prev)=>prev+1);
@@ -68,12 +67,12 @@ const handleSave=()=>{
     setTaskDetailModalVisible(false);
     setSelectedTask(null);
   };
-
+  
   const filteredTasks =
     selectedCategory === 'All'
       ? tasks
       : tasks.filter((task) => task.priority === 'important');
-
+    
   return (
     <View style={styles.container}>
       <CategoryList

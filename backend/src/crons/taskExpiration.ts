@@ -4,8 +4,8 @@ import Task from "../models/task.model";
 const updateExpiredTasks = async () => {
   try {
     const result = await Task.updateMany(
-      { dueDate: { $lt: new Date() }, status: 'Pending' },
-      { $set: { status: 'Expired' } }
+      { dueDate: { $lt: new Date() }, status: 'pending' },
+      { $set: { status: 'expired' } }
     );
     console.log(`${result.modifiedCount} tasks marked as expired.`);
   } catch (error) {

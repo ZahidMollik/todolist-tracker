@@ -5,7 +5,7 @@ import {checkAuth} from "../middlewares/auth.middleware"
 import {upload} from "../utils/multer"
 const router = Router();
 
-router.post("/create",upload.single("image"),checkAuth,taskReqValidation,createTask);
+router.post("/create",checkAuth,upload.single("image"),taskReqValidation,createTask);
 router.get("/",checkAuth,getAllTasks);
 router.patch("/update/:id",checkAuth,updateTask);
 router.delete("/delete/:id",checkAuth,deleteTask);
