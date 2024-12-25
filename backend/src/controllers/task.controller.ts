@@ -111,6 +111,24 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
 export const deleteTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const taskId = req.params.id;
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        status: false,
+        message: "Task not found",
+      });
+      return;
+    }
+
+    if (task.image) {
+      const filePath = path.join(__dirname, "../../uploads", task.image);
+      try {
+        fs.unlinkSync(filePath);
+      } catch (fileError) {
+        console.error(`Error deleting file: ${filePath}`, fileError);
+      }
+    }
 
     const deletedTask = await Task.findByIdAndDelete(taskId);
 

@@ -103,8 +103,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ visible, onClose, onSave, initial
       Alert.alert("Success", "Task has been updated!");
       onSave();
       onClose();
-    } catch (error:any) {
-      Alert.alert("Error",error.message);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        Alert.alert(error.response?.data.message)
+     } else {
+        console.error("An unexpected error occurred:", error);
+     }
     }
   };
 

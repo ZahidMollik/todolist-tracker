@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import React from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 type TaskListProps = {
@@ -7,22 +7,30 @@ type TaskListProps = {
     title: string;
     description: string;
     priority: string;
-    dueDate:Date|null;
-    status:string;
-    image: string | null;
+    dueDate: Date|null;
+    status: string;
+    image: string|null;
   }[];
   onDelete: (index: number) => void;
   onUpdate: (index: number) => void;
   onViewDetails: (task: any) => void;
+  currentpage: number;
+  onPageChange: (newPage: number) => void;
 };
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onDelete, onUpdate, onViewDetails }) => {
-  const [currentPage, setCurrentPage] = useState(1); // Track the current page
+const TaskList: React.FC<TaskListProps> = ({
+  tasks,
+  onDelete,
+  onUpdate,
+  onViewDetails,
+  currentpage,
+  onPageChange,
+}) => {
   const tasksPerPage = 5;
   const totalPages = Math.ceil(tasks.length / tasksPerPage);
   const currentTasks = tasks.slice(
-    (currentPage - 1) * tasksPerPage,
-    currentPage * tasksPerPage
+    (currentpage - 1) * tasksPerPage,
+    currentpage * tasksPerPage
   );
   return (
     <View style={styles.listContainer}>
@@ -33,18 +41,43 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onDelete, onUpdate, onViewDe
           onPress={() => onViewDetails(task)}
         >
           <Text style={styles.taskTitle}>{task.title}</Text>
-          <Text style={task.priority=="important"?{color:"#ef1d16",marginVertical:10,fontWeight:"bold"}:{color:"#1683ef",marginVertical:10,fontWeight:"bold"}}>{task.priority}</Text>
-          <Text style={[{color:"white",width:80,height:25,textAlign:'center',borderRadius:5,fontSize:14,fontWeight:"500"},task.status==="complete"?{backgroundColor:"green"}:task.status==="expired"?{backgroundColor:"red"}:{backgroundColor:"#ccc",color:"black"}]}>
+          <Text
+            style={
+              task.priority === 'important'
+                ? { color: '#ef1d16', marginVertical: 10, fontWeight: 'bold' }
+                : { color: '#1683ef', marginVertical: 10, fontWeight: 'bold' }
+            }
+          >
+            {task.priority}
+          </Text>
+          <Text
+            style={[
+              {
+                color: 'white',
+                width: 80,
+                height: 25,
+                textAlign: 'center',
+                borderRadius: 5,
+                fontSize: 14,
+                fontWeight: '500',
+              },
+              task.status === 'complete'
+                ? { backgroundColor: 'green' }
+                : task.status === 'expired'
+                ? { backgroundColor: 'red' }
+                : { backgroundColor: '#ccc', color: 'black' },
+            ]}
+          >
             {task.status}
-            </Text>
+          </Text>
           <Pressable
-            onPress={() => onDelete((currentPage - 1) * tasksPerPage + index)}
+            onPress={() => onDelete((currentpage - 1) * tasksPerPage + index)}
             style={styles.deleteButton}
           >
             <Feather name="trash-2" size={20} color="red" />
           </Pressable>
           <Pressable
-            onPress={() => onUpdate((currentPage - 1) * tasksPerPage + index)}
+            onPress={() => onUpdate((currentpage - 1) * tasksPerPage + index)}
             style={styles.editButton}
           >
             <Feather name="edit" size={20} color="blue" />
@@ -53,26 +86,26 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onDelete, onUpdate, onViewDe
       ))}
       <View style={styles.paginationContainer}>
         <Pressable
-          onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
+          onPress={() => onPageChange(currentpage - 1)}
+          disabled={currentpage === 1}
           style={[
             styles.paginationButton,
-            currentPage === 1 && styles.disabledButton,
+            currentpage === 1 && styles.disabledButton,
           ]}
         >
           <Text style={styles.paginationText}>Previous</Text>
         </Pressable>
 
         <Text style={styles.pageIndicator}>
-          Page {currentPage} of {totalPages}
+          Page {currentpage} of {totalPages}
         </Text>
 
         <Pressable
-          onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
+          onPress={() => onPageChange(currentpage + 1)}
+          disabled={currentpage === totalPages}
           style={[
             styles.paginationButton,
-            currentPage === totalPages && styles.disabledButton,
+            currentpage === totalPages && styles.disabledButton,
           ]}
         >
           <Text style={styles.paginationText}>Next</Text>
@@ -99,12 +132,6 @@ const styles = StyleSheet.create({
   taskTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  imagePreview: {
-    width: 50,
-    height: 50,
-    borderRadius: 5,
-    marginTop: 5,
   },
   deleteButton: {
     position: 'absolute',

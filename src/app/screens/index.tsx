@@ -24,7 +24,8 @@ const Index = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [refreshKey,setRefreshKey]=useState<number>(0);
+  const [refreshKey,setRefreshKey] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState(1); 
   const categories = ['All', 'Important'];
 
   useEffect(() => {
@@ -39,9 +40,9 @@ const Index = () => {
    fetchTasks();
 }, [refreshKey]);
 
-const handleSave=()=>{
-  setRefreshKey((prev)=>prev+1);
-}
+const handleSave = () => {
+  setRefreshKey((prev) => prev + 1);
+};
 
   const handleDeleteTask = async (index: number) => {
     const taskId = tasks[index]._id;
@@ -49,7 +50,7 @@ const handleSave=()=>{
       await apiClient.delete(`/task/delete/${taskId}`);
       handleSave();
     } catch (error:any) {
-      Alert.alert('Error', 'Failed to delete the task.:',error);
+      Alert.alert('Error', 'Failed to delete the task:', error.message);
     }
   };
 
@@ -67,17 +68,21 @@ const handleSave=()=>{
     setTaskDetailModalVisible(false);
     setSelectedTask(null);
   };
-  
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  };
+
   const filteredTasks =
     selectedCategory === 'All'
       ? tasks
       : tasks.filter((task) => task.priority === 'important');
-    
   return (
     <View style={styles.container}>
       <CategoryList
         categories={categories}
-        onCategoryPress={setSelectedCategory}
+        onCategoryPress={handleCategorySelect}
         selectedCategory={selectedCategory}
       />
 
@@ -86,6 +91,8 @@ const handleSave=()=>{
         onDelete={handleDeleteTask}
         onUpdate={handleUpdateTask}
         onViewDetails={handleViewDetails}
+        currentpage={currentPage}
+        onPageChange={setCurrentPage}
       />
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
@@ -99,7 +106,9 @@ const handleSave=()=>{
           setSelectedTaskIndex(null);
         }}
         onSave={handleSave}
-        initialData={selectedTaskIndex !== null ? tasks[selectedTaskIndex]: undefined}
+        initialData={
+          selectedTaskIndex !== null ? tasks[selectedTaskIndex] : undefined
+        }
       />
 
       <TaskDetailModal
