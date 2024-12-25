@@ -2,13 +2,17 @@ import { Request, Response } from "express";
 import { AuthenticatedRequest } from "../types/types";
 import Task from "../models/task.model";
 import { StatusCodes } from "http-status-codes";
+import fs from "fs";
+import path from "path";
 
 export const createTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { title, description, priority, dueDate} = req.body;
-    const image=req.file?req.file.filename:null;
     const taskTitle= await Task.findOne({title:title});
     if(taskTitle){
+      if (req.file) {
+        fs.unlinkSync(path.join(__dirname, '../../uploads', req.file.filename));
+      }
         res.status(StatusCodes.BAD_REQUEST)
         .json({
           status:false,
@@ -17,6 +21,7 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
         })
         return;
     }
+    const image=req.file?req.file.filename:null;
 
     const newTask = new Task({
       title,
