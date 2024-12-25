@@ -7,6 +7,16 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
   try {
     const { title, description, priority, dueDate} = req.body;
     const image=req.file?req.file.filename:null;
+    const taskTitle= await Task.findOne({title:title});
+    if(taskTitle){
+        res.status(StatusCodes.BAD_REQUEST)
+        .json({
+          status:false,
+          message:"This task already exists",
+          data:""
+        })
+        return;
+    }
 
     const newTask = new Task({
       title,

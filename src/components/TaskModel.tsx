@@ -12,6 +12,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import apiClient from "../api/apiClient";
+import { AxiosError } from "axios";
 
 type TaskModalProps = {
   visible: boolean;
@@ -85,8 +86,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ visible, onClose, onSave, initial
       onClose();
       onSave();
       resetFields();
-    } catch (error:any) {
-      Alert.alert("Error:",error.message);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+          Alert.alert(error.response?.data.message)
+       } else {
+          console.error("An unexpected error occurred:", error);
+       }
     }
   };
 
